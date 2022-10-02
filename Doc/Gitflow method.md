@@ -84,16 +84,14 @@ Quand une *pull request* est créée, elle recquiert l'aval des autres développ
 
 Pour review le code d'une *pull request*, il faut aller dans l'onglet **Pull Request** de Github, et cliquer sur la *pull request* à review. 
 
-![Onglet pull request](./assets/Capture13.JPG)
+![Onglet pull request](./assets/Capture13.png)
 
 Une fois dans la pull request, aller dans l'onglet **File changes**. C'est là que se trouvent les modifications apportées au repo. 
 Pour ajouter un commentaire sur le code, **cliquer sur la croix bleue qui apparaît au survol d'une ligne de code**.
 
-![Comment1](./assets/Comment1.JPG)
+![Comment1](./assets/Comment1.png)
 
 Tapes y ton commentaire. Tu pourras ensuite choisir entre **Add single comment**, qui laissera un simple commentaire, ou **Start a review** (également disponible tout en haut des fichiers). Ce dernier t'amèneras dans l'onglet *Conversation*, et te proposera plusieurs options:
-
-![Comment4](./assets/Comment4.JPG)
 
 >Laisser un commentaire
 
@@ -101,13 +99,13 @@ Tapes y ton commentaire. Tu pourras ensuite choisir entre **Add single comment**
 
 >Réclamer un changement: *mettra en pending le commit, bloquant le merge*
 
-Quel que soit l'option choisie, tu pourras **visualiser les commentaires** dans le code directement et sur l'onglet *Conversation*
+Quel que soit l'option choisie, tu pourras **visualiser les commentaires** dans le code directement et sur l'onglet *Conversation* (oui j'ai écris "fait" au lieu de "faut", ne fais pas attention)
 
-![Comment2](./assets/Comment2.JPG)
+![Comment2](./assets/Comment2.png)
 
 <p></p>
 
-![Comment3](./assets/Comment3.JPG)
+![Comment3](./assets/Comment3.png)
 
 * ##### Résoudre les commentaires dans son commit:
 
