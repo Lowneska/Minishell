@@ -103,12 +103,6 @@ Tapes y ton commentaire. Tu pourras ensuite choisir entre **Add single comment**
 
 Quel que soit l'option choisie, tu pourras **visualiser les commentaires** dans le code directement et sur l'onglet *Conversation*
 
-![Comment2](./assets/Comment2.JPG)
-
-<p></p>
-
-![Comment3](./assets/Comment3.JPG)
-
 * ##### Résoudre les commentaires dans son commit:
 
 Avant de merge, tu seras tenu de **résoudre les commentaires bloquant**. Si possible, tiens compte de tous les commentaires. 
