@@ -1,55 +1,100 @@
-SRC =	srcs/builtins/cd.c \
-		srcs/builtins/echo.c \
-		srcs/builtins/env.c \
-		srcs/builtins/export.c \
-		srcs/builtins/pwd.c \
-		srcs/builtins/unset.c \
-		srcs/builtins/builtins.c \
-		srcs/main.c \
+# **************************************************************************** #
+#                                                                              #
+#                                                         :::      ::::::::    #
+#    Makefile                                           :+:      :+:    :+:    #
+#                                                     +:+ +:+         +:+      #
+#    By: skhali <skhali@student.42.fr>              +#+  +:+       +#+         #
+#                                                 +#+#+#+#+#+   +#+            #
+#    Created: 2022/09/15 05:19:02 by lunovill          #+#    #+#              #
+#    Updated: 2022/10/19 15:32:55 by skhali           ###   ########.fr        #
+#                                                                              #
+# **************************************************************************** #
 
-OBJS =	srcs/builtins/cd.o \
-		srcs/builtins/echo.o \
-		srcs/builtins/env.o \
-		srcs/builtins/export.o \
-		srcs/builtins/pwd.o \
-		srcs/builtins/unset.o \
-		srcs/builtins/builtins.o \
-		srcs/main.o \
+ #=============================================================================#
+#								SOURCES											#
+ #=============================================================================#
+
+SRCS_DIR = sources
+SRC_FILES =	lst_add\
+				lst_init\
+				lst_new\
+				lst_print\
+				lst_rmv\
+				main\
+				tk_command\
+				tk_delimiter\
+				tk_recognition\
+				cd \
+				echo \
+				export \
+				pwd \
+				unset \
+				exit \
+				builtins \
+				env \
+				here_docs \
+				exec_single_builtin \
+				exec \
+				env_mangement \
+				free_minishell \
+				init_minishell \
+				lst_utils \
+				exec_utils \
+				signals \
+
+				
+
+SRCS = $(addsuffix .c, $(SRC_FILES))
+
+ #=============================================================================#
+#									OBJETS										#
+ #=============================================================================#
+
+OBJS_DIR = objets
+OBJS = $(SRCS:%.c=$(OBJS_DIR)/%.o)
+
+ #=============================================================================#
+#									LIBRARY										#
+ #=============================================================================#
+
+LIB_DIR = libft
+
+ #=============================================================================#
+#									COMPILATION									#
+ #=============================================================================#
+
+CC = clang
+CFLAGS = -Wall -Wextra -Werror
+CDFLAGS = -MMD -MP
+CIFLAGS = -Iincludes -I$(LIB_DIR)/includes
+CLFLAGS = -lreadline -L$(LIB_DIR) -lft
+
+ #=============================================================================#
+#									MAKEFILE									#
+ #=============================================================================#
 
 NAME = minishell
 
-CC = gcc
+all : $(NAME)
 
-INC = include/
+$(NAME) : $(OBJS_DIR) $(OBJS)
+	$(CC) $(CFLAGS) $(CIFLAGS) $(OBJS) $(CLFLAGS) $(MLXLFLAGS) -o $(NAME)
 
-RM = rm -rf
+$(OBJS_DIR) :
+	$(MAKE) -C $(LIB_DIR)
+	mkdir $(OBJS_DIR)
 
-CFLAGS = -Wall -Werror -Wextra
+$(OBJS) : $(OBJS_DIR)/%.o : $(SRCS_DIR)/%.c ./includes/$(NAME).h
+	$(CC) $(CFLAGS) $(CDFLAGS) $(CIFLAGS) -c $< -o $@
 
-LIBFLAGS = -L libft -lft
-
-all : ${NAME}
-
-bonus : ${NAME_BONUS}
-
-objs/%.o : srcs/%.c
-	mkdir -p ./objs
-	$(CC) $(CFLAGS) -I${INC} -c $< -o $@
-
-%.o : %.c
-	$(CC) $(CFLAGS) -I${INC} -c $< -o $@
-
-${NAME} : ${OBJS} $(LIB)
-	make -C ./libft
-	$(CC) $(CFLAGS) ${OBJS} -D LINUX ${LIBFLAGS} -o ${NAME}
-
-clean:
-		$(RM) ${OBJS}
-		$(RM) ./objs
-		make clean -C ./libft
+clean :
+	$(MAKE) clean -C $(LIB_DIR)
+	rm -rf $(OBJS_DIR)
 
 fclean: clean
-		$(RM) $(NAME)
-		$(RM) ./libft/libft.a
+	$(MAKE) fclean -C $(LIB_DIR)
+	rm -rf $(NAME)
 
-re:	fclean all
+re : fclean all
+
+.PHONY: all clean fclean re
