@@ -6,11 +6,11 @@
 /*   By: skhali <skhali@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/12 22:17:46 by skhali            #+#    #+#             */
-/*   Updated: 2022/10/19 23:45:38 by skhali           ###   ########.fr       */
+/*   Updated: 2022/11/07 16:48:42 by skhali           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "list.h"
+#include "minishell.h"
 #include <errno.h>
 
 int	is_builtin(t_command *cmd)
@@ -41,34 +41,6 @@ int	is_builtin(t_command *cmd)
 	return (0);
 }
 
-/*int	check_inredir(t_command *cmd)
-{
-	t_token	*token;
-
-	while (is_partition(cmd))
-	{
-		token = cmd->content;
-		if (token->id == LD_DIR || token->id == L_DIR)
-			return (1);
-		cmd = cmd->next;
-	}
-	return (0);
-}
-
-int	check_outredir(t_command *cmd)
-{
-	t_token	*token;
-
-	while (is_partition(cmd))
-	{
-		token = cmd->content;
-		if (token->id == R_DIR || token->id == RD_DIR)
-			return (1);
-		cmd = cmd->next;
-	}
-	return (0);
-}*/
-
 int	opening_fd(t_command *token)
 {
 	if (token->id == 9)
@@ -82,7 +54,21 @@ int	opening_fd(t_command *token)
 	return (-1);
 }
 
-int	redirections(int fd_in, int fd_out, t_command* cmd)
+void	redirections_pt2(int *fd_in, int *fd_out)
+{
+	if (*fd_in > 0)
+	{
+		dup2(*fd_in, 0);
+		close(*fd_in);
+	}
+	if (*fd_out > 0)
+	{
+		dup2(*fd_out, 1);
+		close(*fd_out);
+	}
+}
+
+int	redirections(int fd_in, int fd_out, t_command	*cmd)
 {
 	while (cmd)
 	{
@@ -92,7 +78,9 @@ int	redirections(int fd_in, int fd_out, t_command* cmd)
 				close(fd_in);
 			fd_in = opening_fd(cmd);
 			if (fd_in == -1)
-				return (-1);
+				return (ft_putstr_fd(cmd->cmds, 2),
+					ft_putstr_fd(":No such file or directory/permission denied\n"
+						, 2), -1);
 		}
 		else if (cmd->id == 11 || cmd->id == 9)
 		{
@@ -100,61 +88,36 @@ int	redirections(int fd_in, int fd_out, t_command* cmd)
 				close(fd_out);
 			fd_out = opening_fd(cmd);
 			if (fd_out == -1)
-				return (-1);
+				return (ft_putstr_fd(cmd->cmds, 2),
+					ft_putstr_fd(": Is a directory/permission denied\n", 2), -1);
 		}
 		cmd = cmd->next;
 	}
-	if (fd_in > 0)
-	{
-		dup2(fd_in, 0);
-		close(fd_in);
-	}
-	if (fd_out > 0)
-	{
-		dup2(fd_out, 1);
-		close(fd_out);
-	}
+	redirections_pt2(&fd_in, &fd_out);
 	return (1);
 }
 
-t_command *find_word(t_command *cmd)
-{
-
-	while (cmd)
-	{
-		if (cmd->id == 1)
-			return (cmd);
-		cmd = cmd->next;
-	}
-	return (NULL);
-}
-
+//vérifier si il y a des redirections
+//si plusieurs in tous les ouvrir mais recuperer le contenu du dernier
+//si plusieurs  out tous les ouvrir mais récuperer le contenu dans le dernier
 int	exec_single_builtin(t_minishell *ms)
 {
-	int	fd[2];
-	t_command *cmd;
-	int fd_in;
-	int fd_out;
+	int			fd[2];
+	t_command	*cmd;
+	int			fd_in;
+	int			fd_out;
 
 	fd_in = -40;
 	fd_out = -42;
 	cmd = NULL;
-
-	//vérifier si il y a des redirections
-	//si plusieurs in tous les ouvrir mais recuperer le contenu du dernier
-	//si plusieurs  out tous les ouvrir mais récuperer le contenu dans le dernier
 	fd[0] = dup(0);
 	fd[1] = dup(1);
-	//dup2(0, fd[0]);
-	//dup2(1, fd[1]);
-	//rediretions
 	cmd = ms->partition->cmds;
-	if (!redirections(fd_in, fd_out, cmd))
-		return (-1);
+	if (redirections(fd_in, fd_out, cmd) == -1)
+		return (ft_putstr_fd(": No such file or directory\n", 2), -1);
 	cmd = find_word(ms->partition->cmds);
 	if (cmd)
-		g_status = builtins(ms, cmd->cmds_split, 0);
-	//execution des builtins
+		g_status = builtins(fd, ms, cmd->cmds_split, 0);
 	dup2(fd[0], 0);
 	dup2(fd[1], 1);
 	close(fd[1]);

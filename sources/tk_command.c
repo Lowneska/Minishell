@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   tk_command.c                                       :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: lunovill <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/10/24 21:56:08 by lunovill          #+#    #+#             */
+/*   Updated: 2022/10/24 22:08:19 by lunovill         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
 static int	token(t_token *token, int id)
@@ -19,14 +31,14 @@ static int	token(t_token *token, int id)
 
 static int	cmd_fileorhere(t_token *current, int set)
 {
- 	if (!current->next)
+	if (!current->next)
 		return (0);
 	if (!set && token(current->next, TK_WD_FILENAME))
 	{
-	if (current->id == TK_LESS
-		|| current->id == TK_GREAT
-		|| current->id == TK_DGREAT)
-		return (2);
+		if (current->id == TK_LESS
+			|| current->id == TK_GREAT
+			|| current->id == TK_DGREAT)
+			return (2);
 	}
 	else if (set && token(current->next, TK_WD_HERE_END))
 		if (current->id == TK_DLESS)
@@ -40,13 +52,43 @@ static int	cmd_redirection(t_token *current)
 		return (0);
 	if (cmd_fileorhere(current, 0))
 		return (2);
-	else if (current->next && token(current, TK_IO_NUMBER) && cmd_fileorhere(current->next, 0))
+	else if (current->next && token(current, TK_IO_NUMBER)
+		&& cmd_fileorhere(current->next, 0))
 		return (3);
 	else if (cmd_fileorhere(current, 1))
 		return (2);
-	else if (current->next && token(current, TK_IO_NUMBER) && cmd_fileorhere(current->next, 1))
+	else if (current->next && token(current, TK_IO_NUMBER)
+		&& cmd_fileorhere(current->next, 1))
 		return (3);
+	if (current->next)
+		return (0);
 	return (0);
+}
+
+static int	tk_command2(t_token *current, int ret)
+{
+	while (ret--)
+	{
+		current = current->next;
+		if (!ret)
+			ret = cmd_redirection(current);
+	}
+	if (token(current, TK_WD_CMD_WORD))
+		current = current->next;
+	ret = cmd_redirection(current);
+	if (!ret)
+		ret = token(current, TK_WORD);
+	while (ret--)
+	{
+		current = current->next;
+		if (!ret)
+			ret = cmd_redirection(current);
+		else if (!ret)
+			ret = token(current, TK_WORD);
+	}
+	if (current && current->id == TK_PIPE)
+		return (0);
+	return (1);
 }
 
 int	tk_command(t_token *current)
@@ -54,35 +96,12 @@ int	tk_command(t_token *current)
 	int	ret;
 
 	ret = cmd_redirection(current);
-	if (ret) // cmd_prefix
-	{
-		while (ret--)
-		{
-			current = current->next;
-			if (!ret)
-				ret = cmd_redirection(current);
-		}
-		if (token(current, TK_WD_CMD_WORD)) // cmd_word
-			current = current->next;
-		ret = cmd_redirection(current); // cmd_suffix
-		if (!ret)
-			ret = token(current, TK_WORD);
-		while (ret--)
-		{
-			current = current->next;
-			if (!ret)
-				ret = cmd_redirection(current);
-			if (!ret)
-				ret = token(current, TK_WORD);
-		}
-		if (current && current->id == TK_PIPE) // end of command
-			return (0);
-		return (1);
-	}
-	else if (token(current, TK_WD_CMD_NAME)) // cmd_name
+	if (ret)
+		return (tk_command2(current, ret));
+	else if (token(current, TK_WD_CMD_NAME))
 	{
 		current = current->next;
-		ret = cmd_redirection(current); // cmd_suffix
+		ret = cmd_redirection(current);
 		if (!ret)
 			ret = token(current, TK_WORD);
 		while (ret--)
@@ -90,10 +109,10 @@ int	tk_command(t_token *current)
 			current = current->next;
 			if (!ret)
 				ret = cmd_redirection(current);
-			if (!ret)
+			else if (!ret)
 				ret = token(current, TK_WORD);
 		}
-		if (current && current->id == TK_PIPE) // end of command
+		if (current && current->id == TK_PIPE)
 			return (0);
 		return (1);
 	}

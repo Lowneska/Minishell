@@ -6,7 +6,7 @@
 #    By: skhali <skhali@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/09/15 05:19:02 by lunovill          #+#    #+#              #
-#    Updated: 2022/10/19 15:32:55 by skhali           ###   ########.fr        #
+#    Updated: 2022/11/07 19:03:27 by skhali           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -15,32 +15,41 @@
  #=============================================================================#
 
 SRCS_DIR = sources
-SRC_FILES =	lst_add\
+SRC_FILES =	builtins\
+				cd\
+				check_char\
+				echo\
+				env\
+				env_mangement\
+				exec\
+				exec_single_builtin\
+				exec_utils\
+				exec_utils2\
+				exit\
+				export\
+				export_utils\
+				free_minishell\
+				here_docs\
+				init_minishell\
+				init_minishell_utils\
+				lst_add\
+				lst_free\
 				lst_init\
 				lst_new\
 				lst_print\
 				lst_rmv\
+				lst_utils\
 				main\
+				pwd\
+				signals\
 				tk_command\
 				tk_delimiter\
+				tk_delimiter_utils\
+				tk_delimiter_utils2\
+				tk_expansion \
 				tk_recognition\
-				cd \
-				echo \
-				export \
-				pwd \
-				unset \
-				exit \
-				builtins \
-				env \
-				here_docs \
-				exec_single_builtin \
-				exec \
-				env_mangement \
-				free_minishell \
-				init_minishell \
-				lst_utils \
-				exec_utils \
-				signals \
+				tk_split_cmd\
+				unset\
 
 				
 
@@ -52,6 +61,7 @@ SRCS = $(addsuffix .c, $(SRC_FILES))
 
 OBJS_DIR = objets
 OBJS = $(SRCS:%.c=$(OBJS_DIR)/%.o)
+DEPS = $(SRCS:%.c=$(OBJS_DIR)/%.d)
 
  #=============================================================================#
 #									LIBRARY										#
@@ -63,7 +73,7 @@ LIB_DIR = libft
 #									COMPILATION									#
  #=============================================================================#
 
-CC = clang
+CC = gcc
 CFLAGS = -Wall -Wextra -Werror
 CDFLAGS = -MMD -MP
 CIFLAGS = -Iincludes -I$(LIB_DIR)/includes
@@ -84,7 +94,7 @@ $(OBJS_DIR) :
 	$(MAKE) -C $(LIB_DIR)
 	mkdir $(OBJS_DIR)
 
-$(OBJS) : $(OBJS_DIR)/%.o : $(SRCS_DIR)/%.c ./includes/$(NAME).h
+$(OBJS) : $(OBJS_DIR)/%.o : $(SRCS_DIR)/%.c
 	$(CC) $(CFLAGS) $(CDFLAGS) $(CIFLAGS) -c $< -o $@
 
 clean :
@@ -96,5 +106,7 @@ fclean: clean
 	rm -rf $(NAME)
 
 re : fclean all
+
+-include $(DEPS)
 
 .PHONY: all clean fclean re

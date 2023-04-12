@@ -6,29 +6,37 @@
 /*   By: skhali <skhali@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/16 12:32:24 by skhali            #+#    #+#             */
-/*   Updated: 2022/10/16 12:32:49 by skhali           ###   ########.fr       */
+/*   Updated: 2022/11/07 13:55:07 by skhali           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
- #include "list.h"
-char	*cmd_path(char **paths, char *cmd)
+#include "minishell.h"
+
+void	cmd_pathp2(char **command, char **paths, char *cmd)
 {
 	char	*tmp;
+
+	tmp = ft_strjoin(*paths, "/");
+	*command = ft_strjoin(tmp, cmd);
+	free(tmp);
+}
+
+char	*cmd_path(char **paths, char *cmd)
+{
 	char	*command;
 
-	if (ft_strchr(cmd, '/'))
-	{
-		if (access(cmd, F_OK | X_OK) == 0)
-			return (cmd);
-	}
+	if (!cmd[0])
+		return (NULL);
+	if (ft_strchr(cmd, '/') && access(cmd, F_OK | X_OK) == 0)
+		return (cmd);
 	else
 	{
+		if (!paths)
+			return (NULL);
 		while (*paths)
 		{
-			tmp = ft_strjoin(*paths, "/");
-			command = ft_strjoin(tmp, cmd);
-			free(tmp);
-			if (access(command, 0) == 0)
+			cmd_pathp2(&command, paths, cmd);
+			if (access(command, F_OK) == 0)
 				return (command);
 			free(command);
 			paths++;
@@ -71,4 +79,15 @@ char	**envlst_to_tab(t_env *env)
 	}
 	tab[i] = NULL;
 	return (tab);
+}
+
+t_command	*find_word(t_command *cmd)
+{
+	while (cmd)
+	{
+		if (cmd->id == 1)
+			return (cmd);
+		cmd = cmd->next;
+	}
+	return (NULL);
 }

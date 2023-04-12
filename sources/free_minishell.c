@@ -1,30 +1,47 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   free_minishell.c                                   :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: skhali <skhali@student.42.fr>              +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/10/21 13:10:56 by skhali            #+#    #+#             */
+/*   Updated: 2022/11/06 04:12:04 by skhali           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
 void	free_cmds(t_cmd *cmds)
 {
-	t_token *token;
-	t_token *tmp;
+	t_token	*token;
+	t_token	*tmp;
+
 	token = cmds->first;
-	while(token)
+	while (token)
 	{
 		tmp = token;
 		token = token->next;
-		free(tmp->s);
+		if (tmp->s)
+			free(tmp->s);
 		free(tmp);
 	}
 	free(cmds);
 }
-void free_env(t_env *env)
+
+void	free_env(t_env *env)
 {
-	t_env *tmp;
+	t_env	*tmp;
+
 	while (env)
 	{
 		tmp = env;
 		env = env->next;
-		//free(tmp->val);
+		free(tmp->val);
 		free(tmp);
 	}
 }
+
 void	free_split(char	**str)
 {
 	int	i;
@@ -34,11 +51,12 @@ void	free_split(char	**str)
 		free(str[i]);
 	free(str);
 }
-void free_partitions(t_partition *part)
+
+void	free_partitions(t_partition *part)
 {
-	t_partition *tmp_part;
-	t_command *cmd;
-	t_command *tmp_cmd;
+	t_partition	*tmp_part;
+	t_command	*cmd;
+	t_command	*tmp_cmd;
 
 	while (part)
 	{

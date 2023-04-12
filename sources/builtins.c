@@ -6,13 +6,13 @@
 /*   By: skhali <skhali@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/05 12:26:52 by skhali            #+#    #+#             */
-/*   Updated: 2022/10/19 15:58:38 by skhali           ###   ########.fr       */
+/*   Updated: 2022/10/29 01:25:25 by skhali           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
- #include "list.h"
+#include "minishell.h"
 
-int	builtins(t_minishell *ms, char **cmd, int child)
+int	builtins(int *fd, t_minishell *ms, char **cmd, int child)
 {
 	if (!cmd[0])
 		return (-1);
@@ -25,10 +25,10 @@ int	builtins(t_minishell *ms, char **cmd, int child)
 	else if (!ft_strncmp(cmd[0], "cd", 2))
 		return (built_in_cd(ms->env, cmd));
 	else if (!ft_strncmp(cmd[0], "export", sizeof(cmd[0])))
-		return (built_in_export(ms->env, cmd));
+		return (built_in_export(ms, ms->env, cmd));
 	else if (!ft_strncmp(cmd[0], "unset", sizeof(cmd[0])))
-		return (built_in_unset(&(ms->env), cmd));
+		return (built_in_unset(ms, &(ms->env), cmd));
 	else if (!ft_strncmp(cmd[0], "exit", sizeof(cmd[0])))
-		return (built_in_exit(cmd, child));
+		return (built_in_exit(fd, ms, cmd, child));
 	return (-1);
 }

@@ -6,22 +6,21 @@
 /*   By: skhali <skhali@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/05 16:00:00 by skhali            #+#    #+#             */
-/*   Updated: 2022/10/18 13:42:12 by skhali           ###   ########.fr       */
+/*   Updated: 2022/11/04 17:13:22 by skhali           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
- #include "list.h"
+#include "minishell.h"
 
 size_t	ft_strlen(const char *s)
 {
-	int i;
+	int	i;
 
 	i = 0;
 	while (s[i])
 		i++;
 	return (i);
 }
-
 
 char	*ft_strjoinms(char *s1, char *s2)
 {
@@ -52,21 +51,21 @@ char	*ft_strjoinms(char *s1, char *s2)
 	return (str);
 }
 
-t_env	*ft_lstnew(char  *value)
+t_env	*ft_lstnew(char *value)
 {
-	t_env *cell;
+	t_env	*cell;
 
-    cell = (t_env *)malloc(sizeof(t_env));
+	cell = (t_env *)malloc(sizeof(t_env));
 	if (!cell)
 		return (NULL);
-	cell->val= value;
+	cell->val = ft_strdup(value);
 	cell->next = NULL;
 	return (cell);
 }
 
 void	ft_lstadd_back(t_env **alst, t_env *new)
 {
-	t_env *copy;
+	t_env	*copy;
 
 	if (!alst)
 		return ;
@@ -83,26 +82,27 @@ void	ft_lstadd_back(t_env **alst, t_env *new)
 		copy->next = new;
 	}
 }
-t_env *create_env(char **env)
-{
-    char buf[PATH_MAX + 1];
-    char *pwd;
-    t_env *tmp;
-    tmp = NULL;
-	int i;
 
-    getcwd(buf, sizeof(buf));
-    pwd = ft_strjoin("PWD=", buf);
-    if (!env[0])
-    {
-        ft_lstadd_back(&tmp, ft_lstnew("SHLVL=2"));
-        ft_lstadd_back(&tmp, ft_lstnew(pwd));
+t_env	*create_env(char **env)
+{
+	char	buf[PATH_MAX + 1];
+	char	*pwd;
+	t_env	*tmp;
+	int		i;
+
+	tmp = NULL;
+	getcwd(buf, sizeof(buf));
+	pwd = ft_strjoin("PWD=", buf);
+	if (!env[0])
+	{
+		ft_lstadd_back(&tmp, ft_lstnew("SHLVL=2"));
+		ft_lstadd_back(&tmp, ft_lstnew(pwd));
 		ft_lstadd_back(&tmp, ft_lstnew("_=./minishell"));
-        return (tmp);
-    }
+		return (tmp);
+	}
 	free(pwd);
 	i = -1;
 	while (env[++i])
 		ft_lstadd_back(&tmp, ft_lstnew(env[i]));
-    return (tmp);
+	return (tmp);
 }

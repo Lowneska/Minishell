@@ -1,27 +1,27 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   lst_new.c                                          :+:      :+:    :+:   */
+/*   check_char.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: skhali <skhali@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/04/28 01:34:24 by lunovill          #+#    #+#             */
-/*   Updated: 2022/11/06 19:44:35 by skhali           ###   ########.fr       */
+/*   Created: 2022/11/04 18:02:10 by lunovill          #+#    #+#             */
+/*   Updated: 2022/11/06 16:32:04 by skhali           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "list.h"
+#include "minishell.h"
 
-t_token	*lst_new(void)
+int	check_char(char c, int set)
 {
-	t_token	*new;
-
-	new = malloc(sizeof(*new));
-	if (new == NULL)
-		return (NULL);
-	new->id = 0;
-	new->s = NULL;
-	new->previous = NULL;
-	new->next = NULL;
-	return (new);
+	if (!set && ft_strichr(STRG_OPERATOR, c) != -1)
+		return (1);
+	else if (set == 1 && (c == CHAR_SGL_QUOTE || c == CHAR_DBL_QUOTE))
+		return (c);
+	else if (set == 2 && (c == CHAR_EXPANSION))
+		return (c);
+	else if (set == 3 && (c == CHAR_H_TAB
+			|| c == CHAR_V_TAB || c == CHAR_SPACE))
+		return (1);
+	return (0);
 }
